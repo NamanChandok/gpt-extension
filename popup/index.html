@@ -1,14 +1,173 @@
 <html>
-	<body
-		style="
-			background-color: #1e1e1e;
-			color: #ffffff;
-			font-family: Arial, sans-serif;
-			padding: 10px;
-			width: 280px;
-		"
-	>
-		<h1>Hello Extensions</h1>
-		<script src="/scripts/popup.js"></script>
-	</body>
+    <head>
+        <style>
+            body {
+                background-color: #1e1e1e;
+                color: #ffffff;
+                font-family: Arial, sans-serif;
+                padding: 10px;
+                width: 180px;
+            }
+            label span {
+                display: flex;
+                align-items: center;
+                font-size: 13px;
+                padding: 4px 15px;
+                border: 1px solid #b4b4b4;
+                color: #b4b4b4;
+                border-radius: 15px;
+                margin-inline: 5px;
+                margin-block: 3px;
+                gap: 4px;
+            }
+            input {
+                appearance: none;
+            }
+            input:checked ~ span {
+                background-color: #b4b4b4;
+                color: #1e1e1e;
+            }
+            label.blue span {
+                border-color: #3498db;
+                color: #3498db;
+            }
+            label.blue input:checked ~ span {
+                background-color: #3498db;
+                color: #ffffff;
+            }
+            label.green span {
+                border-color: #2ecc71;
+                color: #2ecc71;
+            }
+            label.green input:checked ~ span {
+                background-color: #2ecc71;
+                color: #ffffff;
+            }
+            label.red span {
+                border-color: #e74c3c;
+                color: #e74c3c;
+            }
+            label.red input:checked ~ span {
+                background-color: #e74c3c;
+                color: #ffffff;
+            }
+        </style>
+    </head>
+    <body>
+        <p style="font-size: 14px">
+            Press the
+            <svg
+                style="width: 16px; height: 16px"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1"
+                    d="m4.988 19.012 5.41-5.41m2.366-6.424 4.058 4.058-2.03 5.41L5.3 20 4 18.701l3.355-9.494 5.41-2.029Zm4.626 4.625L12.197 6.61 14.807 4 20 9.194l-2.61 2.61Z"
+                />
+            </svg>
+            button to rewrite your prompt.
+        </p>
+        <p>Select mode:</p>
+        <label>
+            <input type="radio" id="mode_default" />
+            <span>
+                <svg
+                    style="width: 18px; height: 18px"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1"
+                        d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z"
+                    />
+                </svg>
+                Default
+            </span>
+        </label>
+        <label class="blue">
+            <input type="radio" id="mode_development" />
+            <span>
+                <svg
+                    style="width: 18px; height: 18px"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1"
+                        d="M5.35709 16V5.78571c0-.43393.34822-.78571.77777-.78571H18.5793c.4296 0 .7778.35178.7778.78571V16M5.35709 16h-1c-.55229 0-1 .4477-1 1v1c0 .5523.44771 1 1 1H20.3571c.5523 0 1-.4477 1-1v-1c0-.5523-.4477-1-1-1h-1M5.35709 16H19.3571M9.35709 8l2.62501 2.5L9.35709 13m4.00001 0h2"
+                    />
+                </svg>
+                Development
+            </span>
+        </label>
+        <label class="green">
+            <input type="radio" id="mode_academic" />
+            <span>
+                <svg
+                    style="width: 18px; height: 18px"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1"
+                        d="M3.78552 9.5 12.7855 14l9-4.5-9-4.5-8.99998 4.5Zm0 0V17m3-6v6.2222c0 .3483 2 1.7778 5.99998 1.7778 4 0 6-1.3738 6-1.7778V11"
+                    />
+                </svg>
+                Academic
+            </span>
+        </label>
+        <label class="red">
+            <input type="radio" id="mode_fun" />
+            <span>
+                <svg
+                    style="width: 18px; height: 18px"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1"
+                        d="M9.83892 12.4543s1.24988-3.08822-.21626-5.29004C8.15656 4.96245 4.58671 4.10885 4.39794 4.2436c-.18877.13476-1.11807 3.32546.34803 5.52727 1.4661 2.20183 5.09295 2.68343 5.09295 2.68343Zm0 0C10.3389 13.4543 12 15 12 18v2c0-2-.4304-3.4188 2.0696-5.9188m0 0s-.4894-2.7888 1.1206-4.35788c1.6101-1.56907 4.4903-1.54682 4.6701-1.28428.1798.26254.4317 2.84376-1.0809 4.31786-1.61 1.5691-4.7098 1.3243-4.7098 1.3243Z"
+                    />
+                </svg>
+                Fun
+            </span>
+        </label>
+        <script src="/scripts/popup.js"></script>
+    </body>
 </html>

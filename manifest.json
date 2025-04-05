@@ -1,8 +1,8 @@
 {
-  "name": "Hello Extensions",
-  "description": "Base Level Extension",
+  "name": "GPT Rewrites",
+  "description": "An extension that enhances your shitty prompts.",
   "version": "1.0",
-  "permissions": ["storage", "tabs", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["https://chatgpt.com/*"],
   "manifest_version": 3,
   "action": {
@@ -16,7 +16,11 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://chatgpt.com/*"],
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
+      ],
       "js": ["scripts/content.js"]
     }
   ],
