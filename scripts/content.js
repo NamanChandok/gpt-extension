@@ -235,8 +235,8 @@ const createButton = () => {
   }
 
   function findLLamaParent(input) {
-    return input.closest(".parent-container") ||
-           input.parentNode;
+    return document.querySelector("#mount_0_0_X1 > div > div > div > div.x9f619.x1n2onr6.x1ja2u2z > div > div > div > div.x78zum5.xdt5ytf.x1t2pt76.x1n2onr6.x1ja2u2z > div.x2bj2ny.x78zum5.x1t2pt76.xtrl1hq.x19xhxss.x2a43e4 > div.x9f619.x78zum5.xdt5ytf.x1iyjqo2.xs83m0k.xeuugli.x1swvt13.x1pi30zi > div > div > div.x1ey2m1c.xw7yly9.x7wzq59.x169t7cy.x19f6ikt.x1j7kr1c > div > div > div > div > div > div:nth-child(1) > div > div > div.x78zum5.xdt5ytf.xh8yej3 > div > div.x6s0dn4.x78zum5.x1qughib.xh8yej3 > div")
+           
   }
   
   function findDeepseekParent(input) {
