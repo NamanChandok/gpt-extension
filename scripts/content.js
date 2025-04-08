@@ -19,6 +19,11 @@ const SITE_CONFIGS = {
     buttonStyles:
       "position: absolute; right: 90px; bottom: 8px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #F8FAFF; background: transparent; border: 1px solid #626262; border-radius: 50%; cursor: pointer;",
   },
+  llama: {
+    inputSelector: "#«rr»",
+    buttonStyles: 
+    "position: absolute; right: 100px; bottom: 8px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #F8FAFF; background: transparent; border: 1px solid #626262; border-radius: 50%; cursor: pointer;",
+  },
 };
 
 const getCurrentWebsite = () => {
@@ -27,6 +32,7 @@ const getCurrentWebsite = () => {
   if (host.includes("claude.ai")) return "claudeAi";
   if (host.includes("gemini.google.com")) return "gemini";
   if (host.includes("chat.deepseek.com")) return "deepseek";
+  if (host.includes("meta.ai")) return "llama";
   return "chatgpt"; // Default to ChatGPT if unknown
 };
 
@@ -179,7 +185,7 @@ const createButton = () => {
   
   // Function to update the input field with transformed text
   function updateInputWithTransformedText(input, text) {
-    if (currentSite === "deepseek") {
+    if (currentSite === "deepseek" || currentSite === "llama") {
       input.value = text;
       
       // Batch DOM updates with requestAnimationFrame
@@ -205,6 +211,8 @@ const createButton = () => {
     inputParent = findClaudeParent(targetInput);
   } else if (currentSite === "deepseek") {
     inputParent = findDeepseekParent(targetInput);
+  } else if (currentSite === "llama") {
+    inputParent = findLLamaParent(targetInput);
   } else {
     inputParent = findDefaultParent(targetInput);
   }
@@ -224,6 +232,11 @@ const createButton = () => {
   function findClaudeParent(input) {
     return input.closest(".parent-container") || 
            input.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+  }
+
+  function findLLamaParent(input) {
+    return input.closest(".parent-container") ||
+           input.parentNode;
   }
   
   function findDeepseekParent(input) {
