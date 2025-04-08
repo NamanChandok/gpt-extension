@@ -97,6 +97,7 @@ const createButton = () => {
     transformationInProgress = true;
     formatButton.style.color = "#4caf50"; // Green color to indicate processing
     formatButton.style.borderColor = "#4caf50";
+    formatButton.style.cursor = "wait";
     formatButton.disabled = true;
 
     // Get text based on site type
@@ -146,6 +147,7 @@ const createButton = () => {
       transformationInProgress = false;
       formatButton.style.color = originalColor;
       formatButton.style.borderColor = originalBorderColor;
+      formatButton.style.cursor = "pointer";
       formatButton.disabled = false;
     }
   });
