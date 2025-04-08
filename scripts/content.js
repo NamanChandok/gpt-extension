@@ -30,6 +30,7 @@ const getCurrentWebsite = () => {
   return "chatgpt"; // Default to ChatGPT if unknown
 };
 
+const currentSite = getCurrentWebsite();
 
 // Cache DOM references and avoid repeated lookups
 let cachedInput = null;
