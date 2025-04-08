@@ -12,7 +12,7 @@ const SITE_CONFIGS = {
   gemini: {
     inputSelector: ".ql-editor p",
     buttonStyles:
-      "position: absolute; right: 60px; bottom: 12px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #5f6368; background: #282a2c; border:none; border-radius: 50%; cursor: pointer;",
+      "position: absolute; right: 60px; bottom: 12px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #9a9b9c; background: #282a2c; border:none; border-radius: 50%; cursor: pointer;",
   },
   deepseek: {
     inputSelector: "#chat-input",
