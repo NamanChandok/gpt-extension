@@ -69,15 +69,15 @@ const createButton = () => {
   
   // Pre-compile prompts for each mode to avoid string concatenation during click
   const createPrompt = (mode, text) => {
-    const basePrompt = "Enhance this prompt to make it easier to understand for an AI assistant";
+    const basePrompt = "Enhance this prompt to make it easier to understand for an AI assistant, when giving the reply make sure that no formatting is used so that it comes as plain text:";
     
     switch(mode) {
       case "development":
-        return `${basePrompt} in context of a programming task: '${text}' Return only the new prompt as text. Give an output no matter what.`;
+        return `${basePrompt} in context of a programming task: '${text}', Find what is the language the user wants the output in, if no language specified then use Python, find exactly what is the goal they want to achieve and fill in any details that you think will be appropriate to achieve this goal. Return only the new prompt as text. Give an output no matter what.`;
       case "academic":
-        return `${basePrompt} in context of an academic assignment: '${text}' Return only the new prompt as text. Give an output no matter what.`;
+        return `${basePrompt} in context of an academic assignment: '${text}', Find what is the goal they want, what kind of task it is, according to this give the most comprehensive prompt reply, fill in any details that might be missing. Return only the new prompt as text. Give an output no matter what.`;
       case "fun":
-        return `${basePrompt} in a fun context: '${text}' Return only the new prompt as text. Give an output no matter what.`;
+        return `${basePrompt} in a fun context: '${text}', Return a witty and exciting prompt reply that will enhance the prompt in way that is goofy but still keeps the core message and context. Return only the new prompt as text. Give an output no matter what.`;
       default: // "default" mode
         return `${basePrompt}: '${text}' Return only the new prompt as text. Give an output no matter what.`;
     }
