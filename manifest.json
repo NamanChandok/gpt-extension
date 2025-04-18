@@ -3,7 +3,12 @@
   "description": "An extension that enhances your shitty prompts.",
   "version": "1.0",
   "permissions": ["storage", "activeTab", "scripting"],
-  "host_permissions": ["https://chatgpt.com/*"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://chat.deepseek.com/*"
+  ],
   "manifest_version": 3,
   "action": {
     "default_popup": "popup/index.html",
