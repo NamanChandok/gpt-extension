@@ -2,7 +2,7 @@ const SITE_CONFIGS = {
   chatgpt: {
     inputSelector: "#prompt-textarea p",
     buttonStyles:
-      "position: absolute; right: calc(var(--spacing)*24); bottom: calc(var(--spacing)*2); z-index: 9999; height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #b4b4b4; border: 1px solid #ffffff1a; border-radius: 50%; cursor: pointer;",
+      "height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #b4b4b4; border: 1px solid #2c2c2c; border-radius: 50%; cursor: pointer;",
   },
   claudeAi: {
     inputSelector: ".ProseMirror p",
@@ -12,7 +12,7 @@ const SITE_CONFIGS = {
   gemini: {
     inputSelector: ".ql-editor p",
     buttonStyles:
-      "position: absolute; right: 60px; bottom: 12px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #5f6368; background: #282a2c; border:none; border-radius: 50%; cursor: pointer;",
+      "position: absolute; right: 60px; bottom: 12px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #9a9b9c; background: #282a2c; border:none; border-radius: 50%; cursor: pointer;",
   },
   deepseek: {
     inputSelector: "#chat-input",
@@ -36,17 +36,16 @@ const getCurrentWebsite = () => {
   return "chatgpt"; // Default to ChatGPT if unknown
 };
 
-const currentSite = getCurrentWebsite();
-
 // Cache DOM references and avoid repeated lookups
 let cachedInput = null;
 let previousText = "";
 let transformationInProgress = false;
 
+const currentSite = getCurrentWebsite();
 const findInput = () => {
   // Use cached input if available
   if (cachedInput) return cachedInput;
-  
+
   const input = document.querySelector(SITE_CONFIGS[currentSite].inputSelector);
   if (!input) {
     console.error("Input element not found");
@@ -66,13 +65,14 @@ const createButton = () => {
 
   const formatButton = document.createElement("button");
   // Use more efficient SVG setup
-  formatButton.innerHTML = '<svg class="w-[18px] h-[18px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4.988 19.012 5.41-5.41m2.366-6.424 4.058 4.058-2.03 5.41L5.3 20 4 18.701l3.355-9.494 5.41-2.029Zm4.626 4.625L12.197 6.61 14.807 4 20 9.194l-2.61 2.61Z"/></svg>';
+  formatButton.innerHTML =
+    '<svg class="w-[18px] h-[18px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4.988 19.012 5.41-5.41m2.366-6.424 4.058 4.058-2.03 5.41L5.3 20 4 18.701l3.355-9.494 5.41-2.029Zm4.626 4.625L12.197 6.61 14.807 4 20 9.194l-2.61 2.61Z"/></svg>';
   formatButton.style.cssText = SITE_CONFIGS[currentSite].buttonStyles;
 
   // Add a visual indicator for the button
   const originalColor = formatButton.style.color;
   const originalBorderColor = formatButton.style.borderColor;
-  
+
   // Pre-compile prompts for each mode to avoid string concatenation during click
   const createPrompt = (mode, text) => {
     const basePrompt = "Enhance this prompt to make it easier to understand for an AI assistant, when giving the reply make sure that no formatting is used so that it comes as plain text:";
@@ -91,63 +91,69 @@ const createButton = () => {
 
   formatButton.addEventListener("click", async (e) => {
     e.preventDefault();
-    
+
     // Prevent multiple clicks while processing
     if (transformationInProgress) {
       console.log("Transformation already in progress");
       return;
     }
-    
+
     // Visual feedback - button turns to processing state
     transformationInProgress = true;
     formatButton.style.color = "#4caf50"; // Green color to indicate processing
     formatButton.style.borderColor = "#4caf50";
-    
+    formatButton.style.cursor = "wait";
+    formatButton.disabled = true;
+
     // Get text based on site type
-    let original_text = currentSite === "deepseek" ? targetInput.value : targetInput.textContent;
-    
+    let original_text =
+      currentSite === "deepseek" ? targetInput.value : targetInput.textContent;
+
     if (!original_text || original_text === "") {
       console.log("No text to format");
       resetButtonState();
       return;
     }
-    
+
     // Check if the text is the same as the previous request to avoid unnecessary API calls
     if (original_text === previousText) {
       console.log("Text already transformed, skipping API call");
       resetButtonState();
       return;
     }
-    
+
     previousText = original_text;
-    
+
     try {
       // Use chrome.storage.sync.get as a Promise for cleaner code
       const getStorageData = () => {
         return new Promise((resolve) => {
-          chrome.storage.sync.get(["mode"], (data) => resolve(data.mode || "default"));
+          chrome.storage.sync.get(["mode"], (data) =>
+            resolve(data.mode || "default"),
+          );
         });
       };
-      
+
       const mode = await getStorageData();
       const prompt = createPrompt(mode, original_text);
-      
+
       // Make the API request
       const response = await fetchTransformedText(prompt);
-      
+
       // Update the input field with the transformed text
       updateInputWithTransformedText(targetInput, response);
-      
     } catch (error) {
       console.error("Error during transformation:", error);
     } finally {
       resetButtonState();
     }
-    
+
     function resetButtonState() {
       transformationInProgress = false;
       formatButton.style.color = originalColor;
       formatButton.style.borderColor = originalBorderColor;
+      formatButton.style.cursor = "pointer";
+      formatButton.disabled = false;
     }
   });
 
@@ -155,7 +161,7 @@ const createButton = () => {
   async function fetchTransformedText(prompt) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-    
+
     try {
       const res = await fetch(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBaIdrU-XwT0kpANWQUOkqaMNs_qtvuDTc",
@@ -165,16 +171,16 @@ const createButton = () => {
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
           }),
-          signal: controller.signal
-        }
+          signal: controller.signal,
+        },
       );
-      
+
       clearTimeout(timeoutId);
-      
+
       if (!res.ok) {
         throw new Error(`API response: ${res.status}`);
       }
-      
+
       const data = await res.json();
       return data.candidates[0].content.parts[0].text;
     } catch (error) {
@@ -182,23 +188,23 @@ const createButton = () => {
       return original_text; // Return original text on error
     }
   }
-  
+
   // Function to update the input field with transformed text
   function updateInputWithTransformedText(input, text) {
     if (currentSite === "deepseek" || currentSite === "llama") {
       input.value = text;
-      
+
       // Batch DOM updates with requestAnimationFrame
       requestAnimationFrame(() => {
         const inputEvent = new Event("input", { bubbles: true });
         const changeEvent = new Event("change", { bubbles: true });
-        
+
         input.dispatchEvent(inputEvent);
         input.dispatchEvent(changeEvent);
       });
     } else {
       input.textContent = text;
-      
+
       requestAnimationFrame(() => {
         input.dispatchEvent(new Event("input", { bubbles: true }));
       });
@@ -207,7 +213,9 @@ const createButton = () => {
 
   // Find parent element with optimized approach
   let inputParent;
-  if (currentSite === "claudeAi") {
+  if (currentSite === "chatgpt") {
+    inputParent = document.querySelector("div.ms-auto.flex.items-center");
+  } else if (currentSite === "claudeAi") {
     inputParent = findClaudeParent(targetInput);
   } else if (currentSite === "deepseek") {
     inputParent = findDeepseekParent(targetInput);
@@ -221,41 +229,42 @@ const createButton = () => {
     console.error("Could not find suitable parent element");
     return;
   }
-  
+
   // Only set position once
   if (inputParent.style.position !== "relative") {
     inputParent.style.position = "relative";
   }
-  
-  inputParent.appendChild(formatButton);
-  
+
+  inputParent.prepend(formatButton);
+
   function findClaudeParent(input) {
-    return input.closest(".parent-container") || 
-           input.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+    return (
+      input.closest(".parent-container") ||
+      input.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+        .parentNode
+    );
   }
 
-  function findLLamaParent(input) {
-    return document.querySelector("#mount_0_0_X1 > div > div > div > div.x9f619.x1n2onr6.x1ja2u2z > div > div > div > div.x78zum5.xdt5ytf.x1t2pt76.x1n2onr6.x1ja2u2z > div.x2bj2ny.x78zum5.x1t2pt76.xtrl1hq.x19xhxss.x2a43e4 > div.x9f619.x78zum5.xdt5ytf.x1iyjqo2.xs83m0k.xeuugli.x1swvt13.x1pi30zi > div > div > div.x1ey2m1c.xw7yly9.x7wzq59.x169t7cy.x19f6ikt.x1j7kr1c > div > div > div > div > div > div:nth-child(1) > div > div > div.x78zum5.xdt5ytf.xh8yej3 > div > div.x6s0dn4.x78zum5.x1qughib.xh8yej3 > div")
-           
-  }
-  
   function findDeepseekParent(input) {
     if (input.parentNode && input.parentNode.parentNode) {
       return input.parentNode.parentNode;
     }
     return document.querySelector("._77cefa5");
   }
-  
+
   function findDefaultParent(input) {
-    return input.closest(".parent-container") || 
-           input.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+    return (
+      input.closest(".parent-container") ||
+      input.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+        .parentNode.parentNode.parentNode
+    );
   }
 };
 
 // More efficient element detection with early exit
 const waitForElement = (selector, maxAttempts = 10, interval = 300) => {
   let attempts = 0;
-  
+
   const checkElement = () => {
     const element = document.querySelector(selector);
     if (element) {
@@ -263,23 +272,25 @@ const waitForElement = (selector, maxAttempts = 10, interval = 300) => {
       createButton();
       return true;
     }
-    
+
     attempts++;
     if (attempts < maxAttempts) {
       setTimeout(checkElement, interval);
       return false;
     }
-    
-    console.error(`Element ${selector} not found after ${maxAttempts} attempts`);
+
+    console.error(
+      `Element ${selector} not found after ${maxAttempts} attempts`,
+    );
     return false;
   };
-  
+
   return checkElement();
 };
 
 // Use requestIdleCallback for non-critical initialization
 window.addEventListener("load", () => {
-  if ('requestIdleCallback' in window) {
+  if ("requestIdleCallback" in window) {
     requestIdleCallback(() => {
       waitForElement(SITE_CONFIGS[currentSite].inputSelector);
     });
