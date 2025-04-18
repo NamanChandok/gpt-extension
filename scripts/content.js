@@ -2,7 +2,7 @@ const SITE_CONFIGS = {
   chatgpt: {
     inputSelector: "#prompt-textarea p",
     buttonStyles:
-      "position: absolute; right: calc(var(--spacing)*13); bottom: calc(var(--spacing)*2); z-index: 9999; height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #b4b4b4; border: 1px solid #ffffff1a; border-radius: 50%; cursor: pointer;",
+      "height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #b4b4b4; border: 1px solid #2c2c2c; border-radius: 50%; cursor: pointer;",
   },
   claudeAi: {
     inputSelector: ".ProseMirror p",
@@ -208,7 +208,9 @@ const createButton = () => {
 
   // Find parent element with optimized approach
   let inputParent;
-  if (currentSite === "claudeAi") {
+  if (currentSite === "chatgpt") {
+    inputParent = document.querySelector("div.ms-auto.flex.items-center");
+  } else if (currentSite === "claudeAi") {
     inputParent = findClaudeParent(targetInput);
   } else if (currentSite === "deepseek") {
     inputParent = findDeepseekParent(targetInput);
@@ -226,7 +228,7 @@ const createButton = () => {
     inputParent.style.position = "relative";
   }
 
-  inputParent.appendChild(formatButton);
+  inputParent.prepend(formatButton);
 
   function findClaudeParent(input) {
     return (
