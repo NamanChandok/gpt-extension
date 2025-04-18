@@ -38,6 +38,15 @@ const getCurrentWebsite = () => {
 
 const currentSite = getCurrentWebsite();
 
+// Inject script for llama 
+if (currentSite === "llama") {
+  const injectedScript = document.createElement("script");
+  injectedScript.src = chrome.runtime.getURL("inject.js");
+  injectedScript.onload = () => injectedScript.remove();
+  (document.head || document.documentElement).appendChild(injectedScript);
+  console.log('script has been injected')
+}
+
 // Cache DOM references and avoid repeated lookups
 let cachedInput = null;
 let previousText = "";
@@ -186,16 +195,27 @@ const createButton = () => {
   // Function to update the input field with transformed text
   function updateInputWithTransformedText(input, text) {
     if (currentSite === "deepseek" || currentSite === "llama") {
-      input.value = text;
-      
-      // Batch DOM updates with requestAnimationFrame
-      requestAnimationFrame(() => {
-        const inputEvent = new Event("input", { bubbles: true });
-        const changeEvent = new Event("change", { bubbles: true });
+      if (currentSite === "deepseek") {
+        input.value = text;
         
-        input.dispatchEvent(inputEvent);
-        input.dispatchEvent(changeEvent);
-      });
+        requestAnimationFrame(() => {
+          const inputEvent = new Event("input", { bubbles: true });
+          const changeEvent = new Event("change", { bubbles: true });
+          
+          input.dispatchEvent(inputEvent);
+          input.dispatchEvent(changeEvent);
+        });
+      } else if (currentSite === "llama") {
+        // Inject a script into the page context to update Meta AI input
+        const script = document.createElement("script");
+        script.textContent = `
+          window.dispatchEvent(new CustomEvent("metaAIReplaceText", { 
+            detail: { text: ${JSON.stringify(text)} } 
+          }));
+        `;
+        document.documentElement.appendChild(script);
+        script.remove();
+      }
     } else {
       input.textContent = text;
       
