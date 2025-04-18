@@ -19,6 +19,11 @@ const SITE_CONFIGS = {
     buttonStyles:
       "position: absolute; right: 90px; bottom: 8px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #F8FAFF; background: transparent; border: 1px solid #626262; border-radius: 50%; cursor: pointer;",
   },
+  llama: {
+    inputSelector: "#«rr»",
+    buttonStyles: 
+    "position: absolute; right: 100px; bottom: 8px; z-index: 9999; height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #F8FAFF; background: transparent; border: 1px solid #626262; border-radius: 50%; cursor: pointer;",
+  },
 };
 
 const getCurrentWebsite = () => {
@@ -27,6 +32,7 @@ const getCurrentWebsite = () => {
   if (host.includes("claude.ai")) return "claudeAi";
   if (host.includes("gemini.google.com")) return "gemini";
   if (host.includes("chat.deepseek.com")) return "deepseek";
+  if (host.includes("meta.ai")) return "llama";
   return "chatgpt"; // Default to ChatGPT if unknown
 };
 
@@ -69,16 +75,15 @@ const createButton = () => {
 
   // Pre-compile prompts for each mode to avoid string concatenation during click
   const createPrompt = (mode, text) => {
-    const basePrompt =
-      "Enhance this prompt to make it easier to understand for an AI assistant";
-
-    switch (mode) {
+    const basePrompt = "Enhance this prompt to make it easier to understand for an AI assistant, when giving the reply make sure that no formatting is used so that it comes as plain text:";
+    
+    switch(mode) {
       case "development":
-        return `${basePrompt} in context of a programming task: '${text}' Return only the new prompt as text. Give an output no matter what.`;
+        return `${basePrompt} in context of a programming task: '${text}', Find what is the language the user wants the output in, if no language specified then use Python, find exactly what is the goal they want to achieve and fill in any details that you think will be appropriate to achieve this goal. Return only the new prompt as text. Give an output no matter what.`;
       case "academic":
-        return `${basePrompt} in context of an academic assignment: '${text}' Return only the new prompt as text. Give an output no matter what.`;
+        return `${basePrompt} in context of an academic assignment: '${text}', Find what is the goal they want, what kind of task it is, according to this give the most comprehensive prompt reply, fill in any details that might be missing. Return only the new prompt as text. Give an output no matter what.`;
       case "fun":
-        return `${basePrompt} in a fun context: '${text}' Return only the new prompt as text. Give an output no matter what.`;
+        return `${basePrompt} in a fun context: '${text}', Return a witty and exciting prompt reply that will enhance the prompt in way that is goofy but still keeps the core message and context. Return only the new prompt as text. Give an output no matter what.`;
       default: // "default" mode
         return `${basePrompt}: '${text}' Return only the new prompt as text. Give an output no matter what.`;
     }
@@ -186,7 +191,7 @@ const createButton = () => {
 
   // Function to update the input field with transformed text
   function updateInputWithTransformedText(input, text) {
-    if (currentSite === "deepseek") {
+    if (currentSite === "deepseek" || currentSite === "llama") {
       input.value = text;
 
       // Batch DOM updates with requestAnimationFrame
@@ -214,6 +219,8 @@ const createButton = () => {
     inputParent = findClaudeParent(targetInput);
   } else if (currentSite === "deepseek") {
     inputParent = findDeepseekParent(targetInput);
+  } else if (currentSite === "llama") {
+    inputParent = findLLamaParent(targetInput);
   } else {
     inputParent = findDefaultParent(targetInput);
   }
