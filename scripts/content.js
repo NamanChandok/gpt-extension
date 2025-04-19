@@ -35,6 +35,17 @@ const getCurrentWebsite = () => {
   return "chatgpt"; // Default to ChatGPT if unknown
 };
 
+const currentSite = getCurrentWebsite();
+
+// Inject script for llama 
+if (currentSite === "llama") {
+  const injectedScript = document.createElement("script");
+  injectedScript.src = chrome.runtime.getURL("inject.js");
+  injectedScript.onload = () => injectedScript.remove();
+  (document.head || document.documentElement).appendChild(injectedScript);
+  console.log('script has been injected')
+}
+
 // Cache DOM references and avoid repeated lookups
 let cachedInput = null;
 let previousText = "";
@@ -210,6 +221,16 @@ const createButton = () => {
         input.dispatchEvent(inputEvent);
         input.dispatchEvent(changeEvent);
       });
+    } else if (currentSite === "llama") {
+        // Inject a script into the page context to update Meta AI input
+        const script = document.createElement("script");
+        script.textContent = `
+          window.dispatchEvent(new CustomEvent("metaAIReplaceText", { 
+            detail: { text: ${JSON.stringify(text)} } 
+          }));
+        `;
+        document.documentElement.appendChild(script);
+        script.remove();
     } else {
       input.textContent = text;
 
