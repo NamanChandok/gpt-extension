@@ -3,7 +3,7 @@ const SITE_CONFIGS = {
     inputSelector: "#prompt-textarea p",
     parentSelector: "div.gap-2.overflow-x-auto.flex.items-center",
     buttonStyles:
-      "height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #f3f3f3; border: 1px solid #2c2c2c; border-radius: 50%; cursor: pointer;",
+      "height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #f3f3f3; border: 1px solid #595959; border-radius: 50%; cursor: pointer;",
   },
   claudeAi: {
     inputSelector: ".ProseMirror p",
@@ -24,6 +24,13 @@ const SITE_CONFIGS = {
     buttonStyles:
       "margin-right: 8px; height: 28px; width: 28px; display: flex; justify-content: center; align-items:center; color: #F8FAFF; background: transparent; border: 1px solid #626262; border-radius: 50%; cursor: pointer;",
   },
+  llama: {
+    inputSelector:
+      "p.xw2npq5.x1lwvhnq.xt4736n.xegmrd8.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.x1pi30zi",
+    parentSelector: "div.x78zum5.x1q0g3np.xfex06f.xp1r0qw.xh8yej3",
+    buttonStyles:
+      "height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #9a9b9c; background: #282a2c; border:none; border-radius: 50%; cursor: pointer;",
+  },
 };
 
 const getCurrentWebsite = () => {
@@ -32,26 +39,43 @@ const getCurrentWebsite = () => {
   if (host.includes("claude.ai")) return "claudeAi";
   if (host.includes("gemini.google.com")) return "gemini";
   if (host.includes("chat.deepseek.com")) return "deepseek";
+  if (host.includes("meta.ai")) return "llama";
   return "chatgpt"; // Default to ChatGPT if unknown
 };
 
 const currentSite = getCurrentWebsite();
 
-// Inject script for llama 
+// Inject script for llama
 if (currentSite === "llama") {
-  const injectedScript = document.createElement("script");
-  injectedScript.src = chrome.runtime.getURL("inject.js");
-  injectedScript.onload = () => injectedScript.remove();
-  (document.head || document.documentElement).appendChild(injectedScript);
-  console.log('script has been injected')
+  const script = document.createElement("script");
+  script.src = chrome.runtime.getURL("scripts/inject.js");
+  script.onload = () => script.remove();
+  (document.head || document.documentElement).appendChild(script);
+  console.log("script injected");
+
+  window.addEventListener("message", (event) => {
+    if (
+      event.source !== window ||
+      !event.data ||
+      event.data.source !== "your-extension"
+    )
+      return;
+
+    // You can add more commands/types here if needed
+    if (event.data.type === "REPLACE_TEXT") {
+      window.dispatchEvent(
+        new CustomEvent("EXTENSION_REPLACE_TEXT", {
+          detail: event.data.text,
+        }),
+      );
+    }
+  });
 }
 
 // Cache DOM references and avoid repeated lookups
 let cachedInput = null;
 let previousText = "";
 let transformationInProgress = false;
-
-const currentSite = getCurrentWebsite();
 
 const findInput = () => {
   // Use cached input if available
@@ -210,7 +234,7 @@ const createButton = () => {
 
   // Function to update the input field with transformed text
   function updateInputWithTransformedText(input, text) {
-    console.log(input, text);
+    // console.log(input, text);
     if (currentSite === "deepseek") {
       input.value = text;
       // Batch DOM updates with requestAnimationFrame
@@ -222,15 +246,12 @@ const createButton = () => {
         input.dispatchEvent(changeEvent);
       });
     } else if (currentSite === "llama") {
-        // Inject a script into the page context to update Meta AI input
-        const script = document.createElement("script");
-        script.textContent = `
-          window.dispatchEvent(new CustomEvent("metaAIReplaceText", { 
-            detail: { text: ${JSON.stringify(text)} } 
-          }));
-        `;
-        document.documentElement.appendChild(script);
-        script.remove();
+      console.log("helo");
+      window.postMessage({
+        source: "your-extension",
+        type: "REPLACE_TEXT",
+        text: text,
+      });
     } else {
       input.textContent = text;
 
