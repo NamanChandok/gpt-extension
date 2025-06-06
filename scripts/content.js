@@ -1,9 +1,9 @@
 const SITE_CONFIGS = {
   chatgpt: {
     inputSelector: "#prompt-textarea p",
-    parentSelector: "div.gap-2.overflow-x-auto.flex.items-center",
+    parentSelector: "div[data-testid='composer-footer-actions']",
     buttonStyles:
-      "height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #f3f3f3; border: 1px solid #595959; border-radius: 50%; cursor: pointer;",
+      "height: calc(var(--spacing)*9); width: calc(var(--spacing)*9); display: flex; justify-content: center; align-items:center; color: #f3f3f3; border-radius: 50%; cursor: pointer;",
   },
   claudeAi: {
     inputSelector: ".ProseMirror p",
@@ -24,13 +24,6 @@ const SITE_CONFIGS = {
     buttonStyles:
       "margin-right: 8px; height: 28px; width: 28px; display: flex; justify-content: center; align-items:center; color: #F8FAFF; background: transparent; border: 1px solid #626262; border-radius: 50%; cursor: pointer;",
   },
-  llama: {
-    inputSelector:
-      "p.xw2npq5.x1lwvhnq.xt4736n.xegmrd8.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.x1pi30zi",
-    parentSelector: "div.x78zum5.x1q0g3np.xfex06f.xp1r0qw.xh8yej3",
-    buttonStyles:
-      "height: 36px; width: 36px; display: flex; justify-content: center; align-items:center; color: #9a9b9c; background: #282a2c; border:none; border-radius: 50%; cursor: pointer;",
-  },
 };
 
 const getCurrentWebsite = () => {
@@ -39,38 +32,10 @@ const getCurrentWebsite = () => {
   if (host.includes("claude.ai")) return "claudeAi";
   if (host.includes("gemini.google.com")) return "gemini";
   if (host.includes("chat.deepseek.com")) return "deepseek";
-  if (host.includes("meta.ai")) return "llama";
   return "chatgpt"; // Default to ChatGPT if unknown
 };
 
 const currentSite = getCurrentWebsite();
-
-// Inject script for llama
-if (currentSite === "llama") {
-  const script = document.createElement("script");
-  script.src = chrome.runtime.getURL("scripts/inject.js");
-  script.onload = () => script.remove();
-  (document.head || document.documentElement).appendChild(script);
-  console.log("script injected");
-
-  window.addEventListener("message", (event) => {
-    if (
-      event.source !== window ||
-      !event.data ||
-      event.data.source !== "your-extension"
-    )
-      return;
-
-    // You can add more commands/types here if needed
-    if (event.data.type === "REPLACE_TEXT") {
-      window.dispatchEvent(
-        new CustomEvent("EXTENSION_REPLACE_TEXT", {
-          detail: event.data.text,
-        }),
-      );
-    }
-  });
-}
 
 // Cache DOM references and avoid repeated lookups
 let cachedInput = null;
@@ -116,7 +81,7 @@ const createButton = () => {
   // Pre-compile prompts for each mode to avoid string concatenation during click
   const createPrompt = (mode, text) => {
     const basePrompt =
-      "Enhance this prompt to make it easier to understand for an AI assistant, when giving the reply make sure that no formatting is used so that it comes as plain text:";
+      "You are an expert AI Prompt Engineer. Enhance this prompt to make it easier to understand for an AI assistant, when giving the reply make sure that no formatting is used so that it comes as plain text. Return only the revised prompt as plain text so that i can be directly passed:";
 
     switch (mode) {
       case "development":
@@ -124,7 +89,7 @@ const createButton = () => {
       case "academic":
         return `${basePrompt} in context of an academic assignment: '${text}', Find what is the goal they want, what kind of task it is, according to this give the most comprehensive prompt reply, fill in any details that might be missing. Return only the new prompt as text. Give an output no matter what.`;
       case "fun":
-        return `${basePrompt} in a fun context: '${text}', Return a witty and exciting prompt reply that will enhance the prompt in way that is goofy but still keeps the core message and context. Return only the new prompt as text. Give an output no matter what.`;
+        return `${basePrompt} in a fun context: '${text}', Return a witty and exciting prompt reply that will enhance the prompt in way that is goofy but still keeps the core message and context, not adding any unnecessary details. Return only the new prompt as text. Give an output no matter what.`;
       default: // "default" mode
         return `${basePrompt}: '${text}' Return only the new prompt as text. Give an output no matter what.`;
     }
@@ -244,13 +209,6 @@ const createButton = () => {
 
         input.dispatchEvent(inputEvent);
         input.dispatchEvent(changeEvent);
-      });
-    } else if (currentSite === "llama") {
-      console.log("helo");
-      window.postMessage({
-        source: "your-extension",
-        type: "REPLACE_TEXT",
-        text: text,
       });
     } else {
       input.textContent = text;

@@ -1,6 +1,6 @@
 {
   "name": "GPT Rewrites",
-  "description": "An extension that enhances your shitty prompts.",
+  "description": "An extension that enhances your prompts.",
   "version": "1.0",
   "manifest_version": 3,
   "permissions": ["storage", "activeTab", "scripting"],
@@ -8,8 +8,7 @@
     "https://chatgpt.com/*",
     "https://claude.ai/*",
     "https://gemini.google.com/*",
-    "https://chat.deepseek.com/*",
-    "https://www.meta.ai/*"
+    "https://chat.deepseek.com/*"
   ],
   "action": {
     "default_popup": "popup/index.html",
@@ -26,17 +25,10 @@
         "https://chatgpt.com/*",
         "https://claude.ai/*",
         "https://gemini.google.com/*",
-        "https://chat.deepseek.com/*",
-        "https://www.meta.ai/*"
+        "https://chat.deepseek.com/*"
       ],
       "js": ["scripts/content.js"],
       "run_at": "document_idle"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["scripts/inject.js"],
-      "matches": ["*://*.meta.ai/*"]
     }
   ],
   "background": {
