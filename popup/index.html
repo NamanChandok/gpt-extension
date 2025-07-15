@@ -20,10 +20,25 @@
                 margin-block: 3px;
                 gap: 4px;
             }
-            input {
+            input[type="text"] {
+                all: unset;
+                appearance: none;
+                width: 100%;
+                padding: 8px;
+                border-bottom: 1px solid #ccc;
+                background-color: transparent;
+                box-sizing: border-box;
+                color: #ccc;
+                font-size: 13px;
+                outline: none !important;
+            }
+            input[type="text"]:focus {
+                border-bottom: 1px solid #eee;
+            }
+            input[type="radio"] {
                 appearance: none;
             }
-            input:checked ~ span {
+            input[type="radio"]:checked ~ span {
                 background-color: #b4b4b4;
                 color: #1e1e1e;
             }
@@ -75,6 +90,10 @@
             </svg>
             button to rewrite your prompt.
         </p>
+        <p>Enter your Gemini API key:</p>
+        <div style="display: flex; width: 100%; margin-bottom: 15px">
+            <input type="text" id="api_key" placeholder="Your API key" />
+        </div>
         <p>Select mode:</p>
         <label>
             <input type="radio" id="mode_default" />
